@@ -13,3 +13,4 @@ apscheduler
 sendgrid
 slackclient
 pytest
+flask_login
