@@ -6,7 +6,7 @@ services:
     name: social-media-alert
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app.dashboard.app:app -b 0.0.0.0:$PORT
+    startCommand: gunicorn dashboard.app:app -b 0.0.0.0:$PORT
     envVars:
       - key: DB_TYPE
         value: postgresql
