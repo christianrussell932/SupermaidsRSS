@@ -78,7 +78,19 @@ class NotificationSetting(Base):
     
     def __repr__(self):
         return f"<NotificationSetting(id={self.id}, email_enabled={self.email_enabled}, slack_enabled={self.slack_enabled})>"
+from flask_login import UserMixin
 
+class User(Base, UserMixin):
+    """Model for app users"""
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    email = Column(String(255), unique=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return f"<User(id={self.id}, email='{self.email}')>"
 
 # Function to initialize the database
 def init_db(db_url):
