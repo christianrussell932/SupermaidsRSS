@@ -34,6 +34,13 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+from app.models.models import User  # Make sure this import is at the top
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db_session.query(User).get(int(user_id))
+
+
 # Initialize scheduler and alert system
 scheduler = ScraperScheduler()
 alert_system = AlertSystem()
