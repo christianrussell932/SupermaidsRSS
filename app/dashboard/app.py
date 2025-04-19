@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from ..config.settings import DATABASE_URL, SECRET_KEY, DEBUG, HOST, PORT
+from app.config.settings import DATABASE_URL, SECRET_KEY, DEBUG, HOST, PORT
 from app.models.models import Base, Source, Keyword, Match, NotificationSetting
 from app.scraper.scheduler import ScraperScheduler
 from app.alert.alert_system import AlertSystem
