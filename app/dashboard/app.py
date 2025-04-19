@@ -1,4 +1,3 @@
-raise Exception("Temporary deploy block – do not run app")
 import os
 import logging
 from datetime import datetime
