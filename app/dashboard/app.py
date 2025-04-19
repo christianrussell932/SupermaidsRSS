@@ -394,6 +394,12 @@ def start_app():
     except Exception as e:
         logger.critical(f"Failed to start application: {str(e)}")
         raise
+# Only start the scheduler when deployed via gunicorn
+try:
+    scheduler.start()
+    logger.info("Scheduler started successfully")
+except Exception as e:
+    logger.error(f"Failed to start scheduler: {str(e)}")
 
-if __name__ == '__main__':
-    start_app()
+# This is the Flask app Render/Gunicorn should use
+# (do NOT call app.run() here!)
