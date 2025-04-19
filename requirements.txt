@@ -14,3 +14,4 @@ sendgrid
 slackclient
 pytest
 flask_login
+gunicorn
