@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Matches - Social Media Keyword Alert{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Matches</h1>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Filter Matches</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" action="{{ url_for('matches') }}">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="source_id" class="form-label">Source</label>
+                            <select class="form-select" id="source_id" name="source_id">
+                                <option value="">All Sources</option>
+                                {% for source in sources %}
+                                    <option value="{{ source.id }}" {% if current_source_id == source.id %}selected{% endif %}>
+                                        {{ source.name }} ({{ source.source_type }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="keyword_id" class="form-label">Keyword</label>
+                            <select class="form-select" id="keyword_id" name="keyword_id">
+                                <option value="">All Keywords</option>
+                                {% for keyword in keywords %}
+                                    <option value="{{ keyword.id }}" {% if current_keyword_id == keyword.id %}selected{% endif %}>
+                                        {{ keyword.text }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="days" class="form-label">Time Period</label>
+                            <select class="form-select" id="days" name="days">
+                                <option value="7" {% if current_days == 7 %}selected{% endif %}>Last 7 days</option>
+                                <option value="30" {% if current_days == 30 or not current_days %}selected{% endif %}>Last 30 days</option>
+                                <option value="90" {% if current_days == 90 %}selected{% endif %}>Last 90 days</option>
+                                <option value="0" {% if current_days == 0 %}selected{% endif %}>All time</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary mb-3 w-100">Apply Filters</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Matches Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Matches</h5>
+            <span class="badge bg-secondary">{{ total }} results</span>
+        </div>
+        <div class="card-body">
+            {% if matches %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th>Keyword</th>
+                                <th>Post Content</th>
+                                <th>Author</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for match in matches %}
+                                <tr>
+                                    <td>
+                                        {% if match.source.source_type == 'facebook' %}
+                                            <span class="badge badge-facebook">Facebook</span>
+                                        {% elif match.source.source_type == 'nextdoor' %}
+                                            <span class="badge badge-nextdoor">Nextdoor</span>
+                                        {% endif %}
+                                        <div>{{ match.source.name }}</div>
+                                    </td>
+                                    <td>{{ match.keyword.text }}</td>
+                                    <td>{{ match.post_text[:150] }}{% if match.post_text|length > 150 %}...{% endif %}</td>
+                                    <td>{{ match.post_author or 'Unknown' }}</td>
+                                    <td>{{ match.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <a href="{{ match.post_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-box-arrow-up-right"></i> View Post
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if total > per_page %}
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('matches', page=page-1, source_id=current_source_id, keyword_id=current_keyword_id, days=current_days) }}">
+                                        Previous
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% set total_pages = (total / per_page)|round(0, 'ceil')|int %}
+                            {% for p in range(1, total_pages + 1) %}
+                                {% if p == page %}
+                                    <li class="page-item active">
+                                        <a class="page-link" href="#">{{ p }}</a>
+                                    </li>
+                                {% elif p <= 5 or p >= total_pages - 4 or (p >= page - 2 and p <= page + 2) %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('matches', page=p, source_id=current_source_id, keyword_id=current_keyword_id, days=current_days) }}">
+                                            {{ p }}
+                                        </a>
+                                    </li>
+                                {% elif p == 6 or p == total_pages - 5 %}
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#">...</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page < total_pages %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('matches', page=page+1, source_id=current_source_id, keyword_id=current_keyword_id, days=current_days) }}">
+                                        Next
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    No matches found with the current filters. Try adjusting your filters or run the scrapers to find new matches.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

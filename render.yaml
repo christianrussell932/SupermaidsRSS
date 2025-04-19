@@ -1,0 +1,110 @@
+# Social Media Keyword Alert SaaS - Render.com Deployment
+
+services:
+  # Web service
+  - type: web
+    name: social-media-alert
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app.dashboard.app:app -b 0.0.0.0:$PORT
+    envVars:
+      - key: DB_TYPE
+        value: postgresql
+      - key: DB_HOST
+        fromDatabase:
+          name: social-media-alert-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: social-media-alert-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: social-media-alert-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: social-media-alert-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: social-media-alert-db
+          property: password
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FACEBOOK_COOKIES
+        sync: false
+      - key: FACEBOOK_EMAIL
+        sync: false
+      - key: FACEBOOK_PASSWORD
+        sync: false
+      - key: NEXTDOOR_COOKIES
+        sync: false
+      - key: NEXTDOOR_EMAIL
+        sync: false
+      - key: NEXTDOOR_PASSWORD
+        sync: false
+      - key: SLACK_WEBHOOK_URL
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: NOTIFICATION_EMAIL
+        sync: false
+      - key: SENDER_EMAIL
+        value: alerts@socialmediaalert.com
+
+  # Background worker for scrapers
+  - type: worker
+    name: social-media-alert-worker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -c "from app.scraper.scheduler import ScraperScheduler; scheduler = ScraperScheduler(); scheduler.start()"
+    envVars:
+      - key: DB_TYPE
+        value: postgresql
+      - key: DB_HOST
+        fromDatabase:
+          name: social-media-alert-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: social-media-alert-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: social-media-alert-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: social-media-alert-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: social-media-alert-db
+          property: password
+      - key: FACEBOOK_COOKIES
+        sync: false
+      - key: FACEBOOK_EMAIL
+        sync: false
+      - key: FACEBOOK_PASSWORD
+        sync: false
+      - key: NEXTDOOR_COOKIES
+        sync: false
+      - key: NEXTDOOR_EMAIL
+        sync: false
+      - key: NEXTDOOR_PASSWORD
+        sync: false
+      - key: SLACK_WEBHOOK_URL
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: NOTIFICATION_EMAIL
+        sync: false
+      - key: SENDER_EMAIL
+        value: alerts@socialmediaalert.com
+
+# Database
+databases:
+  - name: social-media-alert-db
+    plan: starter
+    databaseName: social_media_alert

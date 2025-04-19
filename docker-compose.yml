@@ -1,0 +1,39 @@
+version: 2
+services:
+  web:
+    build: .
+    environment:
+      - PORT=5000
+      - DB_TYPE=postgresql
+      - DB_HOST=$DB_HOST
+      - DB_PORT=$DB_PORT
+      - DB_NAME=$DB_NAME
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - SECRET_KEY=$SECRET_KEY
+      - FACEBOOK_COOKIES=$FACEBOOK_COOKIES
+      - FACEBOOK_EMAIL=$FACEBOOK_EMAIL
+      - FACEBOOK_PASSWORD=$FACEBOOK_PASSWORD
+      - NEXTDOOR_COOKIES=$NEXTDOOR_COOKIES
+      - NEXTDOOR_EMAIL=$NEXTDOOR_EMAIL
+      - NEXTDOOR_PASSWORD=$NEXTDOOR_PASSWORD
+      - SLACK_WEBHOOK_URL=$SLACK_WEBHOOK_URL
+      - SENDGRID_API_KEY=$SENDGRID_API_KEY
+      - NOTIFICATION_EMAIL=$NOTIFICATION_EMAIL
+      - SENDER_EMAIL=$SENDER_EMAIL
+    ports:
+      - "5000:5000"
+    command: python app/dashboard/app.py
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_DB=$DB_NAME
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:

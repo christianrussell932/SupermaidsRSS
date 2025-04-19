@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Keywords - Social Media Keyword Alert{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Keywords</h1>
+        <a href="{{ url_for('add_keyword') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add New Keyword
+        </a>
+    </div>
+    
+    <!-- Keywords Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Manage Keywords</h5>
+        </div>
+        <div class="card-body">
+            {% if keywords %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Keyword</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for keyword in keywords %}
+                                <tr>
+                                    <td>{{ keyword.text }}</td>
+                                    <td>
+                                        {% if keyword.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ keyword.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('edit_keyword', id=keyword.id) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ keyword.id }}">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{ keyword.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ keyword.id }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteModalLabel{{ keyword.id }}">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to delete the keyword <strong>{{ keyword.text }}</strong>? This action cannot be undone.
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="{{ url_for('delete_keyword', id=keyword.id) }}" method="post">
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No keywords have been added yet. Click the "Add New Keyword" button to add your first keyword.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Suggested Keywords -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Suggested Keywords</h5>
+        </div>
+        <div class="card-body">
+            <p>Here are some suggested keywords for house cleaning leads:</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            recommend a house cleaner
+                            <a href="{{ url_for('add_keyword') }}?text=recommend%20a%20house%20cleaner" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-plus"></i> Add
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            looking for a cleaning lady
+                            <a href="{{ url_for('add_keyword') }}?text=looking%20for%20a%20cleaning%20lady" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-plus"></i> Add
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            cleaning service
+                            <a href="{{ url_for('add_keyword') }}?text=cleaning%20service" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-plus"></i> Add
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            housekeeper near me
+                            <a href="{{ url_for('add_keyword') }}?text=housekeeper%20near%20me" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-plus"></i> Add
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            maid service
+                            <a href="{{ url_for('add_keyword') }}?text=maid%20service" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-plus"></i> Add
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            cleaning company
+                            <a href="{{ url_for('add_keyword') }}?text=cleaning%20company" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-plus"></i> Add
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            deep clean recommendation
+                            <a href="{{ url_for('add_keyword') }}?text=deep%20clean%20recommendation" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-plus"></i> Add
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            anyone do move out cleans
+                            <a href="{{ url_for('add_keyword') }}?text=anyone%20do%20move%20out%20cleans" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-plus"></i> Add
+                            </a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            house cleaning service
+                            <a href="{{ url_for('add_keyword') }}?text=house%20cleaning%20service" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-plus"></i> Add
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

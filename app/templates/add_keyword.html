@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Keyword - Social Media Keyword Alert{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Add New Keyword</h1>
+        <a href="{{ url_for('keywords') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Keywords
+        </a>
+    </div>
+    
+    <!-- Add Keyword Form -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Keyword Details</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{{ url_for('add_keyword') }}">
+                <div class="mb-3">
+                    <label for="text" class="form-label">Keyword or Phrase</label>
+                    <input type="text" class="form-control" id="text" name="text" value="{{ request.args.get('text', '') }}" required>
+                    <div class="form-text">Enter a keyword or phrase to monitor (e.g., "recommend a house cleaner")</div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> The system will look for exact matches of this keyword or phrase in posts (case insensitive).
+                </div>
+                
+                <div class="d-grid gap-2 col-md-6 mx-auto">
+                    <button type="submit" class="btn btn-primary">Add Keyword</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
